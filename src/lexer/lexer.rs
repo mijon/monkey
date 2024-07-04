@@ -1,50 +1,52 @@
+use crate::{Token, TokenType};
+
 // use crate::lexer::token::Token;
-//
-// pub struct Lexer {
-//     input: String,
-//     position: usize,      // current position in input (points to current char)
-//     read_position: usize, // current reading position in input (adter current char)
-//     ch: u8,               // current char under examination
-// }
-//
-// impl Lexer {
-//     pub fn new(input: String) -> Self {
-//         Self {
-//             input: input,
-//             position: 0,
-//             read_position: 1,
-//             ch: b'\'',
-//         }
-//     }
-//
-//     pub fn read_char(&self) {
-//         if self.read_position >= self.input.len() {
-//             self.ch = 0
-//         } else {
-//             self.ch = self.input[self.read_position]
-//         };
-//         self.position = self.read_position;
-//         self.read_position += 1;
-//     }
-// }
-//
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use crate::token::Token;
-//
-//     #[test]
-//     fn test_next_token() {
-//         let input = "=+(){},;";
-//         let expected = vec![
-//             Token::ASSIGN,
-//             Token::PLUS,
-//             Token::LPAREN,
-//             Token::RPAREN,
-//             Token::LBRACE,
-//             Token::RBRACE,
-//             Token::COMMA,
-//             Token::SEMICOLON,
-//         ];
-//     }
-// }
+use std::iter::Peekable;
+use std::str::Chars;
+
+#[derive(Debug)]
+pub struct Lexer<'a> {
+    input: Peekable<Chars<'a>>,
+    line: i32,
+    col: i32,
+}
+
+impl<'a> Lexer<'a> {
+    pub fn new(input: &'a str) -> Self {
+        Self {
+            input: input.chars().peekable(),
+            line: 0,
+            col: 0,
+        }
+    }
+
+    pub fn next_token(&mut self) -> Option<char> {
+        // Token::new(TokenType::Plus, 1, 1)
+        self.col += 1;
+        self.input.next()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{Token, TokenType};
+
+    #[test]
+    fn test_next_token() {
+        let input = "=+(){},;";
+        let expected = vec![
+            Token::new(TokenType::Assign, 1, 1),
+            Token::new(TokenType::Plus, 2, 1),
+            Token::new(TokenType::Lparen, 3, 1),
+            Token::new(TokenType::Rparen, 4, 1),
+            Token::new(TokenType::Lbrace, 5, 1),
+            Token::new(TokenType::Rbrace, 6, 1),
+            Token::new(TokenType::Comma, 7, 1),
+            Token::new(TokenType::Semicolon, 8, 1),
+        ];
+
+        let lexed = expected.clone();
+        assert_eq!(lexed, expected);
+    }
+}

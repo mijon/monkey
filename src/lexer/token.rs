@@ -1,7 +1,7 @@
 use core::fmt;
 
 #[allow(dead_code)]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TokenType {
     Illegal,
     EOF,
@@ -24,7 +24,7 @@ pub enum TokenType {
     Let,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Token {
     tokentype: TokenType,
     line: usize,

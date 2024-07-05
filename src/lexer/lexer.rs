@@ -7,8 +7,8 @@ use std::str::Chars;
 #[derive(Debug)]
 pub struct Lexer<'a> {
     input: Peekable<Chars<'a>>,
-    line: i32,
-    col: i32,
+    line: usize,
+    col: usize,
 }
 
 impl<'a> Lexer<'a> {
@@ -19,11 +19,23 @@ impl<'a> Lexer<'a> {
             col: 0,
         }
     }
+}
 
-    pub fn next_token(&mut self) -> Option<char> {
-        // Token::new(TokenType::Plus, 1, 1)
+impl<'a> Iterator for Lexer<'a> {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Token> {
         self.col += 1;
-        self.input.next()
+
+        if let Some(output_char) = self.input.next() {
+            Some(Token::new(
+                TokenType::Identifier(output_char.to_string()),
+                self.line,
+                self.col,
+            ))
+        } else {
+            None
+        }
     }
 }
 

@@ -96,7 +96,6 @@ impl<'a> Iterator for Lexer<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::{lexer::lexer, Token, TokenType};
 
     #[test]

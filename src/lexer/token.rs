@@ -22,6 +22,8 @@ pub enum TokenType {
 
     Function,
     Let,
+
+    NewLine,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -58,6 +60,7 @@ impl fmt::Display for TokenType {
             TokenType::Rbrace => write!(f, "}}"),
             TokenType::Function => write!(f, "function"),
             TokenType::Let => write!(f, "let"),
+            TokenType::NewLine => write!(f, "\n"),
         }
     }
 }

@@ -21,6 +21,37 @@ impl<'a> Lexer<'a> {
     }
 }
 
+impl<'a> Lexer<'a> {
+    fn lex_word(&mut self, checker: fn(&char) -> bool, output_char: char) -> String {
+        let mut temp_string = String::new();
+        temp_string.push(output_char);
+
+        while let Some(peeked) = self.input.peek() {
+            if checker(peeked) {
+                temp_string.push(self.input.next().unwrap());
+                self.col += 1;
+            } else {
+                break;
+            }
+        }
+        temp_string
+    }
+}
+
+trait IdentifierExt {
+    fn is_identifer(self) -> bool;
+}
+
+impl IdentifierExt for char {
+    fn is_identifer(self) -> bool {
+        match self {
+            'a'..='z' | 'A'..='Z' => true,
+            '_' => true,
+            _ => false,
+        }
+    }
+}
+
 impl<'a> Iterator for Lexer<'a> {
     type Item = Token;
 
@@ -28,46 +59,16 @@ impl<'a> Iterator for Lexer<'a> {
         self.col += 1;
 
         if let Some(output_char) = self.input.next() {
-            if output_char.is_alphabetic() {
+            if output_char.is_identifer() {
                 let start_col = self.col;
-
-                let mut temp_string = String::new();
-                temp_string.push(output_char);
-
-                // TODO: there's got to be a nicer way of doing this, come back and fix it.
-                while let Some(peeked) = self.input.peek() {
-                    if peeked.is_alphabetic() {
-                        temp_string.push(self.input.next().unwrap());
-                        self.col += 1;
-                    } else {
-                        break;
-                    }
-                }
-
-                let token_type = match temp_string.as_str() {
-                    "fn" => TokenType::Function,
-                    "let" => TokenType::Let,
-                    _ => TokenType::Identifier(temp_string),
-                };
-
+                let word = self.lex_word(|c| c.is_identifer(), output_char);
+                let token_type = lookup_ident(&word);
                 Some(Token::new(token_type, self.line, start_col))
             } else if output_char.is_numeric() {
                 let start_col = self.col;
-
-                let mut temp_num = String::new();
-                temp_num.push(output_char);
-
-                while let Some(peeked) = self.input.peek() {
-                    if peeked.is_numeric() {
-                        temp_num.push(self.input.next().unwrap());
-                        self.col += 1;
-                    } else {
-                        break;
-                    }
-                }
-
+                let word = self.lex_word(|c| c.is_numeric(), output_char);
                 Some(Token::new(
-                    TokenType::Int(temp_num.parse().unwrap()),
+                    TokenType::Int(word.parse().unwrap()),
                     self.line,
                     start_col,
                 ))
@@ -97,6 +98,14 @@ impl<'a> Iterator for Lexer<'a> {
         } else {
             None
         }
+    }
+}
+
+fn lookup_ident(candidate: &str) -> TokenType {
+    match candidate {
+        "fn" => TokenType::Function,
+        "let" => TokenType::Let,
+        _ => TokenType::Identifier(candidate.to_string()),
     }
 }
 
@@ -164,6 +173,19 @@ let ten = 10;";
             Token::new(TokenType::Int(10), 2, 11),
             Token::new(TokenType::Semicolon, 2, 13),
         ];
+
+        let lexed = lexer::Lexer::new(input);
+        assert_eq!(lexed.collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn test_ident_with_underscore() {
+        let input = "_my_var";
+        let expected = vec![Token::new(
+            TokenType::Identifier("_my_var".to_string()),
+            1,
+            1,
+        )];
 
         let lexed = lexer::Lexer::new(input);
         assert_eq!(lexed.collect::<Vec<_>>(), expected);

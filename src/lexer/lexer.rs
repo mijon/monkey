@@ -83,8 +83,16 @@ impl<'a> Iterator for Lexer<'a> {
                     ')' => TokenType::Rparen,
                     '{' => TokenType::Lbrace,
                     '}' => TokenType::Rbrace,
-                    '\n' => TokenType::NewLine,
-                    _ => todo!(),
+                    '\n' => {
+                        self.line += 1;
+                        self.col = 0;
+                        TokenType::NewLine
+                    }
+                    ' ' => TokenType::Space,
+                    _ => {
+                        println!("char: {}.", output_char);
+                        todo!();
+                    }
                 };
                 Some(Token::new(token_type, self.line, self.col))
             }
@@ -97,6 +105,7 @@ impl<'a> Iterator for Lexer<'a> {
 #[cfg(test)]
 mod tests {
     use crate::{lexer::lexer, Token, TokenType};
+    use pretty_assertions::{assert_eq, assert_ne};
 
     #[test]
     fn test_next_token() {
@@ -110,6 +119,52 @@ mod tests {
             Token::new(TokenType::Rbrace, 1, 6),
             Token::new(TokenType::Comma, 1, 7),
             Token::new(TokenType::Semicolon, 1, 8),
+        ];
+
+        let lexed = lexer::Lexer::new(input);
+        assert_eq!(lexed.collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn test_one_line_code() {
+        let input = "let five = 5;";
+        let expected = vec![
+            Token::new(TokenType::Let, 1, 1),
+            Token::new(TokenType::Space, 1, 4),
+            Token::new(TokenType::Identifier("five".to_string()), 1, 5),
+            Token::new(TokenType::Space, 1, 9),
+            Token::new(TokenType::Assign, 1, 10),
+            Token::new(TokenType::Space, 1, 11),
+            Token::new(TokenType::Int(5), 1, 12),
+            Token::new(TokenType::Semicolon, 1, 13),
+        ];
+
+        let lexed = lexer::Lexer::new(input);
+        assert_eq!(lexed.collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn test_two_line_code() {
+        let input = "let five = 5;
+let ten = 10;";
+        let expected = vec![
+            Token::new(TokenType::Let, 1, 1),
+            Token::new(TokenType::Space, 1, 4),
+            Token::new(TokenType::Identifier("five".to_string()), 1, 5),
+            Token::new(TokenType::Space, 1, 9),
+            Token::new(TokenType::Assign, 1, 10),
+            Token::new(TokenType::Space, 1, 11),
+            Token::new(TokenType::Int(5), 1, 12),
+            Token::new(TokenType::Semicolon, 1, 13),
+            Token::new(TokenType::NewLine, 1, 14),
+            Token::new(TokenType::Let, 2, 1),
+            Token::new(TokenType::Space, 2, 4),
+            Token::new(TokenType::Identifier("ten".to_string()), 2, 5),
+            Token::new(TokenType::Space, 2, 8),
+            Token::new(TokenType::Assign, 2, 9),
+            Token::new(TokenType::Space, 2, 10),
+            Token::new(TokenType::Int(10), 2, 11),
+            Token::new(TokenType::Semicolon, 2, 13),
         ];
 
         let lexed = lexer::Lexer::new(input);

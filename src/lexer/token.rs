@@ -24,6 +24,7 @@ pub enum TokenType {
     Let,
 
     NewLine,
+    Space,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -61,6 +62,7 @@ impl fmt::Display for TokenType {
             TokenType::Function => write!(f, "function"),
             TokenType::Let => write!(f, "let"),
             TokenType::NewLine => write!(f, "\n"),
+            TokenType::Space => write!(f, " "),
         }
     }
 }

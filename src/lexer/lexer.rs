@@ -44,12 +44,10 @@ impl<'a> Iterator for Lexer<'a> {
                     }
                 }
 
-                let token_type = if temp_string == "fn" {
-                    TokenType::Function
-                } else if temp_string == "let" {
-                    TokenType::Let
-                } else {
-                    TokenType::Identifier(temp_string)
+                let token_type = match temp_string.as_str() {
+                    "fn" => TokenType::Function,
+                    "let" => TokenType::Let,
+                    _ => TokenType::Identifier(temp_string),
                 };
 
                 Some(Token::new(token_type, self.line, start_col))

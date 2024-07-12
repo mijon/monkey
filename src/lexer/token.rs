@@ -38,6 +38,9 @@ pub enum TokenType {
 
     NewLine,
     Space,
+
+    Eq,
+    NotEq,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -85,8 +88,10 @@ impl fmt::Display for TokenType {
             TokenType::If => write!(f, "if"),
             TokenType::Else => write!(f, "else"),
             TokenType::Return => write!(f, "return"),
-            TokenType::NewLine => write!(f, "\n"),
+            TokenType::NewLine => write!(f, "<newline>"),
             TokenType::Space => write!(f, " "),
+            TokenType::Eq => write!(f, "=="),
+            TokenType::NotEq => write!(f, "!="),
         }
     }
 }

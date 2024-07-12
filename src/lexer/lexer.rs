@@ -36,6 +36,11 @@ impl<'a> Lexer<'a> {
         }
         temp_string
     }
+
+    fn skip_char(&mut self) {
+        let _ = self.input.next();
+        self.col += 1;
+    }
 }
 
 trait IdentifierExt {
@@ -76,7 +81,32 @@ impl<'a> Iterator for Lexer<'a> {
                 ))
             } else {
                 let token_type = match output_char {
-                    '=' => TokenType::Assign,
+                    '=' => {
+                        // TODO: This is really janky, should refactor this
+                        if let Some(peeked) = self.input.peek() {
+                            if *peeked == '=' {
+                                self.skip_char();
+                                TokenType::Eq
+                            } else {
+                                TokenType::Assign
+                            }
+                        } else {
+                            TokenType::Assign
+                        }
+                    }
+                    '!' => {
+                        if let Some(peeked) = self.input.peek() {
+                            if *peeked == '=' {
+                                self.skip_char();
+                                TokenType::NotEq
+                            } else {
+                                TokenType::Exclamation
+                            }
+                        } else {
+                            TokenType::Exclamation
+                        }
+                    }
+
                     '+' => TokenType::Plus,
                     '-' => TokenType::Minus,
                     '/' => TokenType::FSlash,
@@ -89,7 +119,6 @@ impl<'a> Iterator for Lexer<'a> {
                     '}' => TokenType::Rbrace,
                     '<' => TokenType::LChevron,
                     '>' => TokenType::RChevron,
-                    '!' => TokenType::Exclamation,
                     '\n' => TokenType::NewLine,
                     ' ' => TokenType::Space,
                     _ => {
@@ -259,6 +288,23 @@ x + y
             Token::new(TokenType::If, 1, 12),
             Token::new(TokenType::Else, 1, 15),
             Token::new(TokenType::Return, 1, 20),
+        ];
+
+        let lexed = lexer::Lexer::new(input);
+        assert_eq!(lexed.collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn test_two_char_tokens() {
+        let input = "5 == 5, true != false";
+        let expected = vec![
+            Token::new(TokenType::Int(5), 1, 1),
+            Token::new(TokenType::Eq, 1, 3),
+            Token::new(TokenType::Int(5), 1, 6),
+            Token::new(TokenType::Comma, 1, 7),
+            Token::new(TokenType::True, 1, 9),
+            Token::new(TokenType::NotEq, 1, 14),
+            Token::new(TokenType::False, 1, 17),
         ];
 
         let lexed = lexer::Lexer::new(input);

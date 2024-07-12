@@ -56,18 +56,18 @@ impl<'a> Iterator for Lexer<'a> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Token> {
-        self.col += 1;
+        self.col += 1; // step forward
+        let start_col = self.col; // store initial places
+        let start_line = self.line;
 
         if let Some(output_char) = self.input.next() {
             if output_char == ' ' {
                 self.next()
             } else if output_char.is_identifer() {
-                let start_col = self.col;
                 let word = self.lex_word(|c| c.is_identifer(), output_char);
                 let token_type = lookup_ident(&word);
                 Some(Token::new(token_type, self.line, start_col))
             } else if output_char.is_numeric() {
-                let start_col = self.col;
                 let word = self.lex_word(|c| c.is_numeric(), output_char);
                 Some(Token::new(
                     TokenType::Int(word.parse().unwrap()),
@@ -84,11 +84,7 @@ impl<'a> Iterator for Lexer<'a> {
                     ')' => TokenType::Rparen,
                     '{' => TokenType::Lbrace,
                     '}' => TokenType::Rbrace,
-                    '\n' => {
-                        self.line += 1;
-                        self.col = 0;
-                        TokenType::NewLine
-                    }
+                    '\n' => TokenType::NewLine,
                     ' ' => TokenType::Space,
                     _ => {
                         println!("char: {}.", output_char);
@@ -96,9 +92,12 @@ impl<'a> Iterator for Lexer<'a> {
                     }
                 };
 
-                if token_type == TokenType::Space {}
+                if token_type == TokenType::NewLine {
+                    self.col = 0;
+                    self.line += 1;
+                }
 
-                Some(Token::new(token_type, self.line, self.col))
+                Some(Token::new(token_type, start_line, start_col))
             }
         } else {
             None
@@ -117,7 +116,7 @@ fn lookup_ident(candidate: &str) -> TokenType {
 #[cfg(test)]
 mod tests {
     use crate::{lexer::lexer, Token, TokenType};
-    use pretty_assertions::{assert_eq, assert_ne};
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_next_token() {

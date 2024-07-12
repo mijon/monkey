@@ -78,12 +78,18 @@ impl<'a> Iterator for Lexer<'a> {
                 let token_type = match output_char {
                     '=' => TokenType::Assign,
                     '+' => TokenType::Plus,
+                    '-' => TokenType::Minus,
+                    '/' => TokenType::FSlash,
+                    '*' => TokenType::Asterisk,
                     ',' => TokenType::Comma,
                     ';' => TokenType::Semicolon,
                     '(' => TokenType::Lparen,
                     ')' => TokenType::Rparen,
                     '{' => TokenType::Lbrace,
                     '}' => TokenType::Rbrace,
+                    '<' => TokenType::LChevron,
+                    '>' => TokenType::RChevron,
+                    '!' => TokenType::Exclamation,
                     '\n' => TokenType::NewLine,
                     ' ' => TokenType::Space,
                     _ => {
@@ -181,6 +187,59 @@ let ten = 10;";
             1,
             1,
         )];
+
+        let lexed = lexer::Lexer::new(input);
+        assert_eq!(lexed.collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn test_monkey_function() {
+        let input = "let add = fn(x, y) {
+x + y
+};";
+        let expected = vec![
+            Token::new(TokenType::Let, 1, 1),
+            Token::new(TokenType::Identifier("add".to_string()), 1, 5),
+            Token::new(TokenType::Assign, 1, 9),
+            Token::new(TokenType::Function, 1, 11),
+            Token::new(TokenType::Lparen, 1, 13),
+            Token::new(TokenType::Identifier("x".to_string()), 1, 14),
+            Token::new(TokenType::Comma, 1, 15),
+            Token::new(TokenType::Identifier("y".to_string()), 1, 17),
+            Token::new(TokenType::Rparen, 1, 18),
+            Token::new(TokenType::Lbrace, 1, 20),
+            Token::new(TokenType::NewLine, 1, 21),
+            Token::new(TokenType::Identifier("x".to_string()), 2, 1),
+            Token::new(TokenType::Plus, 2, 3),
+            Token::new(TokenType::Identifier("y".to_string()), 2, 5),
+            Token::new(TokenType::NewLine, 2, 6),
+            Token::new(TokenType::Rbrace, 3, 1),
+            Token::new(TokenType::Semicolon, 3, 2),
+        ];
+
+        let lexed = lexer::Lexer::new(input);
+        assert_eq!(lexed.collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn test_more_tokens() {
+        let input = "!-/*5;
+5 < 10 > 5;";
+        let expected = vec![
+            Token::new(TokenType::Exclamation, 1, 1),
+            Token::new(TokenType::Minus, 1, 2),
+            Token::new(TokenType::FSlash, 1, 3),
+            Token::new(TokenType::Asterisk, 1, 4),
+            Token::new(TokenType::Int(5), 1, 5),
+            Token::new(TokenType::Semicolon, 1, 6),
+            Token::new(TokenType::NewLine, 1, 7),
+            Token::new(TokenType::Int(5), 2, 1),
+            Token::new(TokenType::LChevron, 2, 3),
+            Token::new(TokenType::Int(10), 2, 5),
+            Token::new(TokenType::RChevron, 2, 8),
+            Token::new(TokenType::Int(5), 2, 10),
+            Token::new(TokenType::Semicolon, 2, 11),
+        ];
 
         let lexed = lexer::Lexer::new(input);
         assert_eq!(lexed.collect::<Vec<_>>(), expected);

@@ -11,6 +11,9 @@ pub enum TokenType {
 
     Assign,
     Plus,
+    Minus,
+    Asterisk,
+    FSlash,
 
     Comma,
     Semicolon,
@@ -19,6 +22,11 @@ pub enum TokenType {
     Rparen,
     Lbrace,
     Rbrace,
+
+    LChevron,
+    RChevron,
+
+    Exclamation,
 
     Function,
     Let,
@@ -53,12 +61,18 @@ impl fmt::Display for TokenType {
             TokenType::Int(n) => write!(f, "Int ({})", n),
             TokenType::Assign => write!(f, "Assign"),
             TokenType::Plus => write!(f, "+"),
+            TokenType::Minus => write!(f, "-"),
+            TokenType::FSlash => write!(f, "/"),
+            TokenType::Asterisk => write!(f, "*"),
             TokenType::Comma => write!(f, ","),
             TokenType::Semicolon => write!(f, ";"),
             TokenType::Lparen => write!(f, "("),
             TokenType::Rparen => write!(f, ")"),
             TokenType::Lbrace => write!(f, "{{"),
             TokenType::Rbrace => write!(f, "}}"),
+            TokenType::LChevron => write!(f, "<"),
+            TokenType::RChevron => write!(f, ">"),
+            TokenType::Exclamation => write!(f, "!"),
             TokenType::Function => write!(f, "function"),
             TokenType::Let => write!(f, "let"),
             TokenType::NewLine => write!(f, "\n"),

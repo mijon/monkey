@@ -59,7 +59,9 @@ impl<'a> Iterator for Lexer<'a> {
         self.col += 1;
 
         if let Some(output_char) = self.input.next() {
-            if output_char.is_identifer() {
+            if output_char == ' ' {
+                self.next()
+            } else if output_char.is_identifer() {
                 let start_col = self.col;
                 let word = self.lex_word(|c| c.is_identifer(), output_char);
                 let token_type = lookup_ident(&word);
@@ -93,6 +95,9 @@ impl<'a> Iterator for Lexer<'a> {
                         todo!();
                     }
                 };
+
+                if token_type == TokenType::Space {}
+
                 Some(Token::new(token_type, self.line, self.col))
             }
         } else {
@@ -137,11 +142,8 @@ mod tests {
         let input = "let five = 5;";
         let expected = vec![
             Token::new(TokenType::Let, 1, 1),
-            Token::new(TokenType::Space, 1, 4),
             Token::new(TokenType::Identifier("five".to_string()), 1, 5),
-            Token::new(TokenType::Space, 1, 9),
             Token::new(TokenType::Assign, 1, 10),
-            Token::new(TokenType::Space, 1, 11),
             Token::new(TokenType::Int(5), 1, 12),
             Token::new(TokenType::Semicolon, 1, 13),
         ];
@@ -156,20 +158,14 @@ mod tests {
 let ten = 10;";
         let expected = vec![
             Token::new(TokenType::Let, 1, 1),
-            Token::new(TokenType::Space, 1, 4),
             Token::new(TokenType::Identifier("five".to_string()), 1, 5),
-            Token::new(TokenType::Space, 1, 9),
             Token::new(TokenType::Assign, 1, 10),
-            Token::new(TokenType::Space, 1, 11),
             Token::new(TokenType::Int(5), 1, 12),
             Token::new(TokenType::Semicolon, 1, 13),
             Token::new(TokenType::NewLine, 1, 14),
             Token::new(TokenType::Let, 2, 1),
-            Token::new(TokenType::Space, 2, 4),
             Token::new(TokenType::Identifier("ten".to_string()), 2, 5),
-            Token::new(TokenType::Space, 2, 8),
             Token::new(TokenType::Assign, 2, 9),
-            Token::new(TokenType::Space, 2, 10),
             Token::new(TokenType::Int(10), 2, 11),
             Token::new(TokenType::Semicolon, 2, 13),
         ];

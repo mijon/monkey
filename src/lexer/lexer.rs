@@ -115,6 +115,11 @@ fn lookup_ident(candidate: &str) -> TokenType {
     match candidate {
         "fn" => TokenType::Function,
         "let" => TokenType::Let,
+        "true" => TokenType::True,
+        "false" => TokenType::False,
+        "if" => TokenType::If,
+        "else" => TokenType::Else,
+        "return" => TokenType::Return,
         _ => TokenType::Identifier(candidate.to_string()),
     }
 }
@@ -239,6 +244,21 @@ x + y
             Token::new(TokenType::RChevron, 2, 8),
             Token::new(TokenType::Int(5), 2, 10),
             Token::new(TokenType::Semicolon, 2, 11),
+        ];
+
+        let lexed = lexer::Lexer::new(input);
+        assert_eq!(lexed.collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn test_new_keywords() {
+        let input = "true false if else return";
+        let expected = vec![
+            Token::new(TokenType::True, 1, 1),
+            Token::new(TokenType::False, 1, 6),
+            Token::new(TokenType::If, 1, 12),
+            Token::new(TokenType::Else, 1, 15),
+            Token::new(TokenType::Return, 1, 20),
         ];
 
         let lexed = lexer::Lexer::new(input);

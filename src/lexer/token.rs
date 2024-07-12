@@ -30,6 +30,11 @@ pub enum TokenType {
 
     Function,
     Let,
+    True,
+    False,
+    If,
+    Else,
+    Return,
 
     NewLine,
     Space,
@@ -75,6 +80,11 @@ impl fmt::Display for TokenType {
             TokenType::Exclamation => write!(f, "!"),
             TokenType::Function => write!(f, "function"),
             TokenType::Let => write!(f, "let"),
+            TokenType::True => write!(f, "true"),
+            TokenType::False => write!(f, "false"),
+            TokenType::If => write!(f, "if"),
+            TokenType::Else => write!(f, "else"),
+            TokenType::Return => write!(f, "return"),
             TokenType::NewLine => write!(f, "\n"),
             TokenType::Space => write!(f, " "),
         }

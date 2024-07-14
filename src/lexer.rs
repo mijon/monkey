@@ -1,6 +1,5 @@
 use crate::{Token, TokenType};
 
-// use crate::lexer::token::Token;
 use std::iter::Peekable;
 use std::str::Chars;
 
@@ -155,7 +154,7 @@ fn lookup_ident(candidate: &str) -> TokenType {
 
 #[cfg(test)]
 mod tests {
-    use crate::{lexer::lexer, Token, TokenType};
+    use crate::{lexer, Token, TokenType};
     use pretty_assertions::assert_eq;
 
     #[test]

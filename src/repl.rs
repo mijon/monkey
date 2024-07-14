@@ -1,4 +1,4 @@
-use crate::lexer::lexer;
+use crate::lexer;
 use std::io;
 use std::io::Write;
 

@@ -1,8 +1,9 @@
-pub mod lexer;
-pub mod repl;
+mod lexer;
+mod repl;
+mod token;
 
-use crate::repl::repl::repl;
-use lexer::token::{Token, TokenType};
+use crate::repl::repl;
+use token::{Token, TokenType};
 
 fn main() {
     // let testtoken = TokenType::Identifier(String::from("hello"));

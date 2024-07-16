@@ -101,3 +101,34 @@ impl fmt::Display for Token {
         write!(f, "{} @({}:{})", &self.tokentype, &self.line, &self.column)
     }
 }
+
+pub fn tokens_to_tokentypes(tokens: &Vec<Token>) -> Vec<TokenType> {
+    tokens
+        .into_iter()
+        .map(|v| v.tokentype.clone())
+        .collect::<Vec<TokenType>>()
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    // use crate::{lexer, Token, TokenType};
+    use super::*;
+    #[test]
+    fn test_token_type_extraction() {
+        let token_vector = vec![
+            Token::new(TokenType::Function, 1, 1),
+            Token::new(TokenType::Identifier("test".to_string()), 1, 5),
+            Token::new(TokenType::Lparen, 1, 7),
+        ];
+
+        let expected = vec![
+            TokenType::Function,
+            TokenType::Identifier("test".to_string()),
+            TokenType::Lparen,
+        ];
+
+        assert_eq!(tokens_to_tokentypes(&token_vector), expected)
+    }
+}

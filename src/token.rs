@@ -45,7 +45,7 @@ pub enum TokenType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Token {
-    tokentype: TokenType,
+    pub tokentype: TokenType,
     line: usize,
     column: usize,
 }
@@ -60,39 +60,45 @@ impl Token {
     }
 }
 
+impl TokenType {
+    pub fn literal(&self) -> String {
+        match &self {
+            TokenType::Illegal => "ILLEGAL".to_string(),
+            TokenType::EOF => "~~End of File~~".to_string(),
+            TokenType::Identifier(r) => "Identifier ({r})".to_string(),
+            TokenType::Int(n) => "Int ({n})".to_string(),
+            TokenType::Assign => "Assign".to_string(),
+            TokenType::Plus => "+".to_string(),
+            TokenType::Minus => "-".to_string(),
+            TokenType::FSlash => "/".to_string(),
+            TokenType::Asterisk => "*".to_string(),
+            TokenType::Comma => ",".to_string(),
+            TokenType::Semicolon => ";".to_string(),
+            TokenType::Lparen => "(".to_string(),
+            TokenType::Rparen => ")".to_string(),
+            TokenType::Lbrace => "{".to_string(),
+            TokenType::Rbrace => "}".to_string(),
+            TokenType::LChevron => "<".to_string(),
+            TokenType::RChevron => ">".to_string(),
+            TokenType::Exclamation => "!".to_string(),
+            TokenType::Function => "function".to_string(),
+            TokenType::Let => "let".to_string(),
+            TokenType::True => "true".to_string(),
+            TokenType::False => "false".to_string(),
+            TokenType::If => "if".to_string(),
+            TokenType::Else => "else".to_string(),
+            TokenType::Return => "return".to_string(),
+            TokenType::NewLine => "<newline>".to_string(),
+            TokenType::Space => " ".to_string(),
+            TokenType::Eq => "==".to_string(),
+            TokenType::NotEq => "!=".to_string(),
+        }
+    }
+}
+
 impl fmt::Display for TokenType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match &self {
-            TokenType::Illegal => write!(f, "ILLEGAL"),
-            TokenType::EOF => write!(f, "~~End of File~~"),
-            TokenType::Identifier(r) => write!(f, "Identifier ({r})"),
-            TokenType::Int(n) => write!(f, "Int ({})", n),
-            TokenType::Assign => write!(f, "Assign"),
-            TokenType::Plus => write!(f, "+"),
-            TokenType::Minus => write!(f, "-"),
-            TokenType::FSlash => write!(f, "/"),
-            TokenType::Asterisk => write!(f, "*"),
-            TokenType::Comma => write!(f, ","),
-            TokenType::Semicolon => write!(f, ";"),
-            TokenType::Lparen => write!(f, "("),
-            TokenType::Rparen => write!(f, ")"),
-            TokenType::Lbrace => write!(f, "{{"),
-            TokenType::Rbrace => write!(f, "}}"),
-            TokenType::LChevron => write!(f, "<"),
-            TokenType::RChevron => write!(f, ">"),
-            TokenType::Exclamation => write!(f, "!"),
-            TokenType::Function => write!(f, "function"),
-            TokenType::Let => write!(f, "let"),
-            TokenType::True => write!(f, "true"),
-            TokenType::False => write!(f, "false"),
-            TokenType::If => write!(f, "if"),
-            TokenType::Else => write!(f, "else"),
-            TokenType::Return => write!(f, "return"),
-            TokenType::NewLine => write!(f, "<newline>"),
-            TokenType::Space => write!(f, " "),
-            TokenType::Eq => write!(f, "=="),
-            TokenType::NotEq => write!(f, "!="),
-        }
+        write!(f, "{}", &self.literal())
     }
 }
 
